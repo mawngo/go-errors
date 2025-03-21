@@ -4,8 +4,8 @@
 package errors
 
 import (
-	"fmt"
 	"runtime"
+	"strconv"
 	"strings"
 )
 
@@ -29,7 +29,7 @@ func newStackTrace() stacktrace {
 	// We are returning a new slice by re-slicing the pc with the required length and capacity (when the
 	// no of returned callFrames is less that stackDepth). This uses less memory compared to pc[:n] as
 	// the capacity of new slice is inherited from the parent slice if not specified.
-	return stacktrace(pc[:n:n])
+	return pc[:n:n]
 }
 
 // String implements the fmt.Stringer interface to provide formatted text output.
@@ -44,7 +44,13 @@ func (s stacktrace) String() string {
 		frame, more := cf.Next()
 		// used formatting scheme <`>`space><function name><tab><filepath><:><line><newline> for example:
 		// > testing.tRunner	/home/go/go1.17.8/src/testing/testing.go:1259
-		buf.WriteString(fmt.Sprintf("> %s\t%s:%d\n", frame.Func.Name(), frame.File, frame.Line))
+		buf.WriteString("> ")
+		buf.WriteString(frame.Func.Name())
+		buf.WriteString("\t")
+		buf.WriteString(frame.File)
+		buf.WriteString(":")
+		buf.WriteString(strconv.Itoa(frame.Line))
+		buf.WriteString("\n")
 		if !more {
 			break
 		}

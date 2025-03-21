@@ -34,7 +34,7 @@ func (b *base) Error() string {
 		if e == b.info {
 			return e
 		}
-		return fmt.Sprintf("%s: %s", b.info, b.err.Error())
+		return b.info + ": " + e
 	}
 	return b.info
 }
@@ -134,10 +134,13 @@ func formatErrorChain(err error) string {
 	for err != nil {
 		var e *base
 		if errors.As(err, &e) {
-			buf.WriteString(fmt.Sprintf("%s\n%v", e.info, e.stack))
+			buf.WriteString(e.info)
+			buf.WriteString("\n")
+			buf.WriteString(fmt.Sprintf("%v", e.stack))
 			err = e.err
 		} else {
-			buf.WriteString(fmt.Sprintf("%s\n", err.Error()))
+			buf.WriteString(err.Error())
+			buf.WriteString("\n")
 			err = nil
 		}
 	}
