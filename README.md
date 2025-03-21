@@ -1,4 +1,4 @@
-# Errors
+# Go Errors
 
 Simple errors with stack trace support.
 
@@ -16,6 +16,8 @@ test_error_message
 ```
 
 ## Installation
+
+Require go 1.22+
 
 ```shell
 go get -u github.com/mawngo/go-errors
