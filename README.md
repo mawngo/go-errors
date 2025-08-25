@@ -33,7 +33,7 @@ import (
 	"github.com/mawngo/go-errors"
 )
 
-var ErrUhOh = errors.New("uh oh")
+var ErrUhOh = errors.Raw("uh oh")
 
 func main() {
 	wrap := errors.Wrapf(ErrUhOh, "uhoh wrapped")

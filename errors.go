@@ -62,7 +62,8 @@ func (b *base) Format(s fmt.State, verb rune) {
 }
 
 // Newf formats according to a format specifier and returns a new error with a stacktrace
-// with recent call frames. Each call to New returns a distinct error value even if the text is
+// with recent call frames.
+// Each call to Newf returns a distinct error value even if the text is
 // identical. An alternative of the errors.New function.
 func Newf(format string, args ...any) error {
 	info := format
@@ -71,6 +72,17 @@ func Newf(format string, args ...any) error {
 	}
 	return &base{
 		info:  info,
+		stack: newStackTrace(),
+		err:   nil,
+	}
+}
+
+// New create a new error with a stacktrace with recent call frames.
+// Each call to New returns a distinct error value even if the text is identical.
+// Deprecated: use [Newf] for error with stacktrace, use [Raw] for error without stacktrace.
+func New(message string) error {
+	return &base{
+		info:  message,
 		stack: newStackTrace(),
 		err:   nil,
 	}
@@ -190,10 +202,11 @@ func Join(errs ...error) error {
 	return errors.Join(errs...)
 }
 
-// New is a wrapper of built-in [errors.New],
+// Raw is a wrapper of built-in [errors.New].
+// Raw create an error without stacktrace,
 // for defining error constant without having to import the go standard errors package.
-// New returns an error without a stacktrace, use [Newf] if you want to return an error with a stacktrace.
-func New(msg string) error {
+// Use [Newf] if you want to return an error with a stacktrace.
+func Raw(msg string) error {
 	return errors.New(msg)
 }
 

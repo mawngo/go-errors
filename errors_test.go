@@ -16,7 +16,7 @@ import (
 const msg = "test_error_message"
 const wrapper = "test_wrapper"
 
-var ErrTest = New("global_defined_error")
+var ErrTest = Raw("global_defined_error")
 
 func TestNewf(t *testing.T) {
 	err := Newf(msg)
