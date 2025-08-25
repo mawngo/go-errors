@@ -17,7 +17,7 @@ test_error_message
 
 ## Installation
 
-Require go 1.22+
+Require go 1.25+
 
 ```shell
 go get -u github.com/mawngo/go-errors

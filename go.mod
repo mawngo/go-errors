@@ -1,6 +1,6 @@
 module github.com/mawngo/go-errors
 
-go 1.22
+go 1.25
 
 require github.com/stretchr/testify v1.10.0
 

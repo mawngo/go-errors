@@ -192,3 +192,7 @@ func Join(errs ...error) error {
 func New(msg string) error {
 	return errors.New(msg)
 }
+
+// ErrUnsupported indicates that a requested operation cannot be performed.
+// See [errors.ErrUnsupported] for details.
+var ErrUnsupported = errors.ErrUnsupported
