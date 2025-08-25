@@ -39,7 +39,7 @@ func (b *base) Error() string {
 	return b.info
 }
 
-// String implements the fmt.Stringer interface.
+// String implements the [fmt.Stringer] interface.
 // String returns error message of this error only.
 // For full error chain message use Error instead.
 func (b *base) String() string {
@@ -51,7 +51,7 @@ func (b *base) Unwrap() error {
 	return b.err
 }
 
-// Format implements the fmt.Formatter interface to support the formatting of an error chain with "%+v" verb.
+// Format implements the [fmt.Formatter] interface to support the formatting of an error chain with "%+v" verb.
 // Whenever error is printed with %+v format verb, stacktrace info gets dumped to the output.
 func (b *base) Format(s fmt.State, verb rune) {
 	if verb == 'v' && s.Flag('+') {
@@ -64,12 +64,13 @@ func (b *base) Format(s fmt.State, verb rune) {
 // Newf formats according to a format specifier and returns a new error with a stacktrace
 // with recent call frames. Each call to New returns a distinct error value even if the text is
 // identical. An alternative of the errors.New function.
-//
-// If no args have been passed, it is same as `New` function without formatting. Character like
-// '%' still has to be escaped in that scenario.
 func Newf(format string, args ...any) error {
+	info := format
+	if len(args) > 0 {
+		info = fmt.Sprintf(format, args...)
+	}
 	return &base{
-		info:  fmt.Sprintf(format, args...),
+		info:  info,
 		stack: newStackTrace(),
 		err:   nil,
 	}
@@ -78,23 +79,26 @@ func Newf(format string, args ...any) error {
 // Wrapf returns a new error by formatting the error message with the supplied format specifier
 // and wrapping another error with a stacktrace containing recent call frames.
 //
-// If cause is nil, this method return nil. If no args have been passed, it is same as `Wrap`
-// function without formatting. Character like '%' still has to be escaped in that scenario.
+// If cause is nil, this method returns nil.
 func Wrapf(cause error, format string, args ...any) error {
 	if cause == nil {
 		return nil
 	}
+	info := format
+	if len(args) > 0 {
+		info = fmt.Sprintf(format, args...)
+	}
 	return &base{
-		info:  fmt.Sprintf(format, args...),
+		info:  info,
 		stack: newStackTrace(),
 		err:   cause,
 	}
 }
 
 // Wrap returns a new error by wrapping another error with a stacktrace containing recent call frames.
-// If cause is nil, this method return nil.
+// If cause is nil, this method returns nil.
 //
-// If you want to add context msg to the error, use Wrapf.
+// If you want to add context msg to the error, use [Wrapf].
 func Wrap(cause error) error {
 	if cause == nil {
 		return nil
@@ -148,7 +152,7 @@ func formatErrorChain(err error) string {
 }
 
 // The functions `Is`, `As` & `Unwrap` provides a thin wrapper around the builtin errors
-// package in go. Just for sake of completeness and correct autocompletion behaviors from
+// package in go. Just for the sake of completeness and correct autocompletion behaviors from
 // IDEs they have been wrapped using functions instead of using variable to reference them
 // as first class functions (eg: var Is = errros.Is ).
 
@@ -159,22 +163,22 @@ func Is(err, target error) bool {
 	return errors.Is(err, target)
 }
 
-// As is a wrapper of built-in errors.As. It finds the first error in err's
+// As is a wrapper of built-in [errors.As]. It finds the first error in err's
 // chain that matches target, and if one is found, sets target to that error
 // value and returns true. Otherwise, it returns false.
 func As(err error, target any) bool {
 	return errors.As(err, target)
 }
 
-// Unwrap is a wrapper of built-in errors.Unwrap. Unwrap returns the result of
-// calling the Unwrap method on err, if err's type contains an Unwrap method
+// Unwrap is a wrapper of built-in errors.Unwrap.
+// Unwrap returns the result of calling the Unwrap method on err, if err's type contains an Unwrap method
 // returning error. Otherwise, Unwrap returns nil.
 func Unwrap(err error) error {
 	return errors.Unwrap(err)
 }
 
-// Join is a wrapper of built-in errors.Join
-// errors.Join returns an error that wraps the given errors.
+// Join is a wrapper of built-in [errors.Join]
+// Join returns an error that wraps the given errors.
 // Any nil error values are discarded.
 // Join returns nil if every value in errs is nil.
 // The error formats as the concatenation of the strings obtained
@@ -186,13 +190,25 @@ func Join(errs ...error) error {
 	return errors.Join(errs...)
 }
 
-// New is a wrapper of built-in errors.New,
+// New is a wrapper of built-in [errors.New],
 // for defining error constant without having to import the go standard errors package.
-// New returns an error without a stacktrace, use Newf if you want to return an error with a stacktrace.
+// New returns an error without a stacktrace, use [Newf] if you want to return an error with a stacktrace.
 func New(msg string) error {
 	return errors.New(msg)
 }
 
-// ErrUnsupported indicates that a requested operation cannot be performed.
-// See [errors.ErrUnsupported] for details.
+// ErrUnsupported is a wrapper of built-in [errors.ErrUnsupported]
+// [errors.ErrUnsupported] indicates that a requested operation cannot be performed,
+// because it is unsupported. For example, a call to [os.Link] when using a
+// file system that does not support hard links.
+//
+// Functions and methods should not return this error but should instead
+// return an error including appropriate context that satisfies
+//
+//	errors.Is(err, errors.ErrUnsupported)
+//
+// either by directly wrapping ErrUnsupported or by implementing an [Is] method.
+//
+// Functions and methods should document the cases in which an error
+// wrapping this will be returned.
 var ErrUnsupported = errors.ErrUnsupported
