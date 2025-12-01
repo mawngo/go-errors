@@ -17,13 +17,13 @@ import (
 	"strings"
 )
 
-// base is the fundamental struct that implements the error interface and the acts as the backbone of this errors package.
+// base is the fundamental struct that implements the error interface, and act as the backbone of this package.
 type base struct {
 	// info contains the error message passed through calls like errors.Wrap, errors.New.
 	info string
 	// stacktrace stores information about the program counters - i.e. where this error was generated.
 	stack stacktrace
-	// err is the actual error which is being wrapped with a stacktrace and message information.
+	// err is the actual error that is being wrapped with a stacktrace and message information.
 	err error
 }
 
@@ -40,8 +40,8 @@ func (b *base) Error() string {
 }
 
 // String implements the [fmt.Stringer] interface.
-// String returns error message of this error only.
-// For full error chain message use Error instead.
+// String returns an error message of this error only.
+// For a full error chain message use Error instead.
 func (b *base) String() string {
 	return b.info
 }
@@ -51,8 +51,8 @@ func (b *base) Unwrap() error {
 	return b.err
 }
 
-// Format implements the [fmt.Formatter] interface to support the formatting of an error chain with "%+v" verb.
-// Whenever error is printed with %+v format verb, stacktrace info gets dumped to the output.
+// Format implements the [fmt.Formatter] interface to support the formatting of an error chain with the "%+v" verb.
+// Whenever an error is printed with the %+v format verb, stacktrace info gets dumped to the output.
 func (b *base) Format(s fmt.State, verb rune) {
 	if verb == 'v' && s.Flag('+') {
 		_, _ = s.Write([]byte(formatErrorChain(b)))
@@ -61,10 +61,10 @@ func (b *base) Format(s fmt.State, verb rune) {
 	_, _ = s.Write([]byte(b.Error()))
 }
 
-// Newf formats according to a format specifier and returns a new error with a stacktrace
+// Newf formats a message according to a format specifier and returns a new error with a stacktrace
 // with recent call frames.
 // Each call to Newf returns a distinct error value even if the text is
-// identical. An alternative of the errors.New function.
+// identical. An alternative of the stdlib errors.New function.
 func Newf(format string, args ...any) error {
 	info := format
 	if len(args) > 0 {
@@ -79,7 +79,9 @@ func Newf(format string, args ...any) error {
 
 // New create a new error with a stacktrace with recent call frames.
 // Each call to New returns a distinct error value even if the text is identical.
-// Deprecated: use [Newf] for error with stacktrace, use [Raw] for error without stacktrace.
+//
+// Deprecated: use [Newf] for error with stacktrace, use [Raw] for error without stacktrace
+// to avoid confusion with stdlib errors.New.
 func New(message string) error {
 	return &base{
 		info:  message,
@@ -91,7 +93,7 @@ func New(message string) error {
 // Wrapf returns a new error by formatting the error message with the supplied format specifier
 // and wrapping another error with a stacktrace containing recent call frames.
 //
-// If cause is nil, this method returns nil.
+// If the cause is nil, this method returns nil.
 func Wrapf(cause error, format string, args ...any) error {
 	if cause == nil {
 		return nil
@@ -108,9 +110,10 @@ func Wrapf(cause error, format string, args ...any) error {
 }
 
 // Wrap returns a new error by wrapping another error with a stacktrace containing recent call frames.
-// If cause is nil, this method returns nil.
 //
-// If you want to add context msg to the error, use [Wrapf].
+// If the cause is nil, this method returns nil.
+//
+// Deprecated: It is recommended to add context msg to the error using [Wrapf] instead.
 func Wrap(cause error) error {
 	if cause == nil {
 		return nil
@@ -203,8 +206,9 @@ func Join(errs ...error) error {
 }
 
 // Raw is a wrapper of built-in [errors.New].
-// Raw create an error without stacktrace,
+// Raw creates an error without stacktrace,
 // for defining error constant without having to import the go standard errors package.
+//
 // Use [Newf] if you want to return an error with a stacktrace.
 func Raw(msg string) error {
 	return errors.New(msg)
