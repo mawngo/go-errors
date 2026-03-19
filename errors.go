@@ -80,7 +80,7 @@ func Newf(format string, args ...any) error {
 // New create a new error with a stacktrace with recent call frames.
 // Each call to New returns a distinct error value even if the text is identical.
 //
-// Deprecated: use [Newf] for error with stacktrace, use [Raw] for error without stacktrace
+// Deprecated: use [Newf] for error with stacktrace, use [Raw] for error without stacktr ace
 // to avoid confusion with stdlib errors.New.
 func New(message string) error {
 	return &base{
@@ -210,6 +210,8 @@ func Join(errs ...error) error {
 // for defining error constant without having to import the go standard errors package.
 //
 // Use [Newf] if you want to return an error with a stacktrace.
+//
+// Deprecated: Use [errors.New] from the standard errors package instead.
 func Raw(msg string) error {
 	return errors.New(msg)
 }

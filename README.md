@@ -29,11 +29,12 @@ go get -u github.com/mawngo/go-errors
 package main
 
 import (
+	stderrors "errors"
 	"fmt"
 	"github.com/mawngo/go-errors"
 )
 
-var ErrUhOh = errors.Raw("uh oh")
+var ErrUhOh = stderrors.New("uh oh")
 
 func main() {
 	wrap := errors.Wrapf(ErrUhOh, "uhoh wrapped")

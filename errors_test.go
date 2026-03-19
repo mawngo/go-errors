@@ -4,7 +4,6 @@
 package errors
 
 import (
-	//lint:ignore faillint Custom errors package tests need to import standard library errors.
 	stderrors "errors"
 	"fmt"
 	"regexp"
@@ -15,7 +14,7 @@ import (
 const msg = "test_error_message"
 const wrapper = "test_wrapper"
 
-var ErrTest = Raw("global_defined_error")
+var ErrTest = stderrors.New("global_defined_error")
 
 func TestNewf(t *testing.T) {
 	err := Newf(msg)
