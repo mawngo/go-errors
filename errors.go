@@ -77,19 +77,6 @@ func Newf(format string, args ...any) error {
 	}
 }
 
-// New create a new error with a stacktrace with recent call frames.
-// Each call to New returns a distinct error value even if the text is identical.
-//
-// Deprecated: use [Newf] for error with stacktrace, use [Raw] for error without stacktr ace
-// to avoid confusion with stdlib errors.New.
-func New(message string) error {
-	return &base{
-		info:  message,
-		stack: newStackTrace(),
-		err:   nil,
-	}
-}
-
 // Wrapf returns a new error by formatting the error message with the supplied format specifier
 // and wrapping another error with a stacktrace containing recent call frames.
 //
@@ -104,22 +91,6 @@ func Wrapf(cause error, format string, args ...any) error {
 	}
 	return &base{
 		info:  info,
-		stack: newStackTrace(),
-		err:   cause,
-	}
-}
-
-// Wrap returns a new error by wrapping another error with a stacktrace containing recent call frames.
-//
-// If the cause is nil, this method returns nil.
-//
-// Deprecated: It is recommended to add context msg to the error using [Wrapf] instead.
-func Wrap(cause error) error {
-	if cause == nil {
-		return nil
-	}
-	return &base{
-		info:  cause.Error(),
 		stack: newStackTrace(),
 		err:   cause,
 	}
@@ -219,17 +190,6 @@ func AsType[E error](err error) (E, bool) {
 // A non-nil error returned by Join implements the Unwrap() []error method.
 func Join(errs ...error) error {
 	return errors.Join(errs...)
-}
-
-// Raw is a wrapper of built-in [errors.New].
-// Raw creates an error without stacktrace,
-// for defining error constant without having to import the go standard errors package.
-//
-// Use [Newf] if you want to return an error with a stacktrace.
-//
-// Deprecated: Use [errors.New] from the standard errors package instead.
-func Raw(msg string) error {
-	return errors.New(msg)
 }
 
 // ErrUnsupported is a wrapper of built-in [errors.ErrUnsupported]

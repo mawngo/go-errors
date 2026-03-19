@@ -60,24 +60,6 @@ func TestWrapf(t *testing.T) {
 	}
 }
 
-func TestWrap(t *testing.T) {
-	err := Newf(msg)
-	err = Wrap(err)
-
-	expectedMsg := msg
-	if err.Error() != expectedMsg {
-		t.Fatalf("the root error message must match")
-	}
-
-	reg := regexp.MustCompile(`test_error_message[ \n]+> github\.com\/mawngo\/go-errors\.TestWrap	.*\/go-errors\/errors_test\.go:\d+
-[[:ascii:]]+test_error_message[ \n]+> github\.com\/mawngo\/go-errors\.TestWrap	.*\/go-errors\/errors_test\.go:\d+`)
-
-	errMsg := fmt.Sprintf("%+v", err)
-	if !reg.MatchString(errMsg) {
-		t.Fatalf("matching stacktrace in errors.Wrap")
-	}
-}
-
 func TestUnwrap(t *testing.T) {
 	// test with base error
 	err := Newf(msg)
@@ -181,18 +163,26 @@ func TestCause(t *testing.T) {
 }
 
 func TestErrorIs(t *testing.T) {
-	// test with base error that implements interface containing Unwrap method
-	err := Wrap(ErrTest)
+	// test with a base error that implements the interface containing Unwrap method
+	err := Wrapf(ErrTest, "uh oh")
 	if !stderrors.Is(err, ErrTest) {
 		t.Fatalf("expected error to be equal to ErrTest")
 	}
 }
 
 func TestErrorAs(t *testing.T) {
-	// test with base error that implements interface containing Unwrap method
-	err := Wrap(ErrTest)
+	// test with a base error that implements the interface containing Unwrap method
+	err := Wrapf(ErrTest, "uh oh")
 	var e *base
 	if !stderrors.As(err, &e) {
+		t.Fatalf("expected error to be assignable to base error")
+	}
+}
+
+func TestErrorAsType(t *testing.T) {
+	// test with a base error that implements the interface containing Unwrap method
+	err := Wrapf(ErrTest, "uh oh")
+	if _, ok := stderrors.AsType[*base](err); !ok {
 		t.Fatalf("expected error to be assignable to base error")
 	}
 }
