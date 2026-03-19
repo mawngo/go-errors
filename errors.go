@@ -151,11 +151,10 @@ func Cause(err error) error {
 func formatErrorChain(err error) string {
 	var buf strings.Builder
 	for err != nil {
-		var e *base
-		if errors.As(err, &e) {
+		if e, ok := errors.AsType[*base](err); ok {
 			buf.WriteString(e.info)
 			buf.WriteString("\n")
-			buf.WriteString(fmt.Sprintf("%v", e.stack))
+			_, _ = fmt.Fprintf(&buf, "%v", e.stack)
 			err = e.err
 		} else {
 			buf.WriteString(err.Error())

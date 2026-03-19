@@ -76,7 +76,6 @@ func TestWrap(t *testing.T) {
 	if !reg.MatchString(errMsg) {
 		t.Fatalf("matching stacktrace in errors.Wrap")
 	}
-
 }
 
 func TestUnwrap(t *testing.T) {
